@@ -7,8 +7,8 @@ use vector_lib::{
 };
 
 use crate::{
-    common::datadog::{self, get_api_base_endpoint},
-    http::{HttpClient, HttpError},
+    common::datadog::{self, get_api_base_endpoint, Region},
+    http::{BodyBox, HttpClient, HttpError},
     sinks::HealthcheckError,
 };
 
@@ -196,8 +196,6 @@ pub enum DatadogApiError {
     #[snafu(display("Server responded with an error."))]
     ServerError,
 }
-
-pub type BodyBox = http_body::combinators::BoxBody<hyper::body::Bytes, hyper::Error>;
 
 impl DatadogApiError {
     /// Common DatadogApiError handling for HTTP Responses.
