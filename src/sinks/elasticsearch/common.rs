@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bytes::{Buf, Bytes};
 use http::{Response, StatusCode, Uri};
-use hyper::{body};
+use hyper::body;
 use serde::Deserialize;
 use snafu::ResultExt;
 use vector_lib::config::proxy::ProxyConfig;
@@ -13,7 +13,7 @@ use super::{
     InvalidHostSnafu, Request, VersionType,
 };
 use crate::{
-    http::{Auth, HttpClient, MaybeAuth, BodyBox},
+    http::{Auth, BodyBox, HttpClient, MaybeAuth},
     sinks::{
         elasticsearch::{
             ElasticsearchAuthConfig, ElasticsearchCommonMode, ElasticsearchConfig, ParseError,
@@ -312,7 +312,6 @@ async fn get_version(
     }
     Err("Unexpected response from Elasticsearch endpoint `/`. Consider setting `api_version` option.".into())
 }
-
 
 async fn get(
     base_url: &str,
