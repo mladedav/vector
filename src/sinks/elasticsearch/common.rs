@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bytes::{Buf, Bytes};
 use http::{Response, StatusCode, Uri};
-use hyper::{body, Body};
+use hyper::{body};
 use serde::Deserialize;
 use snafu::ResultExt;
 use vector_lib::config::proxy::ProxyConfig;
@@ -313,13 +313,15 @@ async fn get_version(
     Err("Unexpected response from Elasticsearch endpoint `/`. Consider setting `api_version` option.".into())
 }
 
+pub type BodyBox = http_body::combinators::BoxBody<hyper::body::Bytes, hyper::Error>;
+
 async fn get(
     base_url: &str,
     auth: &Option<Auth>,
     request: &RequestConfig,
     client: HttpClient,
     path: &str,
-) -> crate::Result<Response<Body>> {
+) -> crate::Result<Response<BodyBox>> {
     let mut builder = Request::get(format!("{}{}", base_url, path));
 
     for (header, value) in &request.headers {

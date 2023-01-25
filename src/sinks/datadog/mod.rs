@@ -1,6 +1,5 @@
 use futures_util::FutureExt;
 use http::{Request, StatusCode, Uri};
-use hyper::body::Body;
 use snafu::Snafu;
 use vector_lib::{
     config::AcknowledgementsConfig, configurable::configurable_component,
@@ -198,12 +197,14 @@ pub enum DatadogApiError {
     ServerError,
 }
 
+pub type BodyBox = http_body::combinators::BoxBody<hyper::body::Bytes, hyper::Error>;
+
 impl DatadogApiError {
     /// Common DatadogApiError handling for HTTP Responses.
     /// Returns Ok(response) if the response was Ok/Accepted.
     pub fn from_result(
-        result: Result<http::Response<Body>, HttpError>,
-    ) -> Result<http::Response<Body>, DatadogApiError> {
+        result: Result<http::Response<BodyBox>, HttpError>,
+    ) -> Result<http::Response<BodyBox>, DatadogApiError> {
         match result {
             Ok(response) => {
                 match response.status() {
