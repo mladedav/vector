@@ -38,6 +38,8 @@ use crate::{
     tls::{tls_connector_builder, MaybeTlsSettings, TlsError},
 };
 
+const BODY_REPORT_BYTES: usize = 20;
+
 pub mod status {
     pub const FORBIDDEN: u16 = 403;
     pub const NOT_FOUND: u16 = 404;
@@ -153,9 +155,18 @@ where
 
             let (parts, body) = response.into_parts();
 
+            let mut buffer: Option<Vec<u8>> = Some(Vec::with_capacity(BODY_REPORT_BYTES));
             let body = body
-                .map_data(|data| {
-                    emit!(http_client::HttpBodyDataReceived { buf: &data });
+                .map_data(move |data| {
+                    if let Some(buf) = &mut buffer {
+                        buf.extend_from_slice(
+                            &data[..data.len().min(BODY_REPORT_BYTES - buf.len())],
+                        );
+                        if buf.len() >= BODY_REPORT_BYTES {
+                            emit!(http_client::HttpBodyDataReceived { buf });
+                            buffer = None;
+                        }
+                    }
                     data
                 })
                 .boxed();
