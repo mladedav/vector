@@ -127,7 +127,6 @@ pub fn build_healthcheck(
 // Use this to map a healthcheck response, as it handles setting up the renewal task.
 pub fn healthcheck_response(
     response: http::Response<BodyBox>,
-    auth: GcpAuthenticator,
     not_found_error: crate::Error,
 ) -> crate::Result<()> {
     match response.status() {
