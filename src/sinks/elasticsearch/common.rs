@@ -13,7 +13,7 @@ use super::{
     InvalidHostSnafu, Request, VersionType,
 };
 use crate::{
-    http::{Auth, BodyBox, HttpClient, MaybeAuth},
+    http::{HttpClient, HttpClientBody, MaybeAuth},
     sinks::{
         elasticsearch::{
             ElasticsearchAuthConfig, ElasticsearchCommonMode, ElasticsearchConfig, ParseError,
@@ -319,7 +319,7 @@ async fn get(
     request: &RequestConfig,
     client: HttpClient,
     path: &str,
-) -> crate::Result<Response<BodyBox>> {
+) -> crate::Result<Response<HttpClientBody>> {
     let mut builder = Request::get(format!("{}{}", base_url, path));
 
     for (header, value) in &request.headers {

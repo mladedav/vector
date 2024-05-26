@@ -6,7 +6,7 @@ use vector_lib::configurable::configurable_component;
 
 use crate::{
     gcp::{GcpAuthenticator, GcpError},
-    http::{BodyBox, HttpClient},
+    http::{HttpClient, HttpClientBody},
     sinks::{
         gcs_common::service::GcsResponse,
         util::retries::{RetryAction, RetryLogic},
@@ -126,7 +126,7 @@ pub fn build_healthcheck(
 
 // Use this to map a healthcheck response, as it handles setting up the renewal task.
 pub fn healthcheck_response(
-    response: http::Response<BodyBox>,
+    response: http::Response<HttpClientBody>,
     not_found_error: crate::Error,
 ) -> crate::Result<()> {
     match response.status() {

@@ -7,8 +7,8 @@ use vector_lib::{
 };
 
 use crate::{
-    common::datadog::{self, get_api_base_endpoint, Region},
-    http::{BodyBox, HttpClient, HttpError},
+    common::datadog::{self, get_api_base_endpoint},
+    http::{HttpClient, HttpClientBody, HttpError},
     sinks::HealthcheckError,
 };
 
@@ -201,8 +201,8 @@ impl DatadogApiError {
     /// Common DatadogApiError handling for HTTP Responses.
     /// Returns Ok(response) if the response was Ok/Accepted.
     pub fn from_result(
-        result: Result<http::Response<BodyBox>, HttpError>,
-    ) -> Result<http::Response<BodyBox>, DatadogApiError> {
+        result: Result<http::Response<HttpClientBody>, HttpError>,
+    ) -> Result<http::Response<HttpClientBody>, DatadogApiError> {
         match result {
             Ok(response) => {
                 match response.status() {

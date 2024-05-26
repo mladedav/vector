@@ -38,7 +38,7 @@ use crate::{
     tls::{tls_connector_builder, MaybeTlsSettings, TlsError},
 };
 
-const BODY_REPORT_BYTES: usize = 20;
+const BODY_REPORT_BYTES: usize = 100;
 
 pub mod status {
     pub const FORBIDDEN: u16 = 403;
@@ -73,7 +73,7 @@ impl HttpError {
 }
 
 pub type HttpClientFuture = <HttpClient as Service<http::Request<Body>>>::Future;
-pub type BodyBox = http_body::combinators::BoxBody<hyper::body::Bytes, hyper::Error>;
+pub type HttpClientBody = http_body::combinators::BoxBody<hyper::body::Bytes, hyper::Error>;
 type HttpProxyConnector = ProxyConnector<HttpsConnector<HttpConnector>>;
 
 pub struct HttpClient<B = Body> {
@@ -118,7 +118,7 @@ where
     pub fn send(
         &self,
         mut request: Request<B>,
-    ) -> BoxFuture<'static, Result<http::Response<BodyBox>, HttpError>> {
+    ) -> BoxFuture<'static, Result<http::Response<HttpClientBody>, HttpError>> {
         let span = tracing::info_span!("http");
         let _enter = span.enter();
 
@@ -257,7 +257,7 @@ where
     B::Data: Send,
     B::Error: Into<crate::Error> + Send,
 {
-    type Response = http::Response<BodyBox>;
+    type Response = http::Response<HttpClientBody>;
     type Error = HttpError;
     type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
 
